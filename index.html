@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAVE | Ностальгический Портал</title>
+    <title>SAVE | VHS & 8-BIT ARCHIVE</title>
     <script src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
     <style>
         :root { --accent: #ff4500; --card-bg: rgba(15, 15, 15, 0.95); --text: #ffffff; }
@@ -19,13 +19,13 @@
         nav a:hover { color: var(--accent); }
 
         header { text-align: center; padding: 30px; }
-        .logo { font-size: clamp(2.5rem, 8vw, 4.5rem); letter-spacing: 12px; margin: 0; text-shadow: 2px 2px 15px #000; font-weight: 900; color: #fff; }
+        .logo { font-size: clamp(2.5rem, 8vw, 4.5rem); letter-spacing: 12px; margin: 0; text-shadow: 2px 2px 15px #000; font-weight: 900; }
 
         .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 20px; }
         .section-title { background: var(--accent); display: inline-block; padding: 6px 15px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; box-shadow: 4px 4px 0 #000; }
 
-        /* ГЛАВНЫЙ ПЛЕЕР RUTUBE */
-        .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        /* ПЛЕЕР */
+        .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; }
         .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
         .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
@@ -33,14 +33,14 @@
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .video-item { 
             background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; 
-            transition: 0.3s; border: 1px solid #444; position: relative;
+            transition: 0.3s; border: 1px solid #444; 
         }
         .video-item:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 8px 20px rgba(255,69,0,0.4); }
-        .video-item img { width: 100%; height: 130px; object-fit: cover; opacity: 0.6; transition: 0.3s; }
+        .video-item img { width: 100%; height: 130px; object-fit: cover; opacity: 0.6; }
         .video-item:hover img { opacity: 1; }
-        .video-item-info { padding: 12px; font-size: 0.8rem; font-weight: bold; text-align: center; background: #111; min-height: 45px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+        .video-item-info { padding: 12px; font-size: 0.8rem; font-weight: bold; text-align: center; background: #111; text-transform: uppercase; }
 
-        /* ВЫЕЗЖАЮЩАЯ DENDY */
+        /* ЭМУЛЯТОР СЛЕВА */
         #nes-sidebar {
             position: fixed; left: -400px; top: 0; width: 380px; height: 100%; 
             background: #151515; border-right: 4px solid var(--accent); z-index: 1000;
@@ -50,21 +50,20 @@
         .nes-toggle {
             position: fixed; left: 20px; bottom: 20px; background: var(--accent);
             color: white; border: 2px solid #fff; width: 70px; height: 70px; border-radius: 50%; cursor: pointer;
-            z-index: 1001; font-size: 2rem; box-shadow: 0 0 25px rgba(255,69,0,0.6); transition: 0.3s;
+            z-index: 1001; font-size: 2rem; box-shadow: 0 0 25px rgba(255,69,0,0.6);
         }
-        .nes-toggle:hover { transform: scale(1.1) rotate(10deg); }
 
-        #nes-canvas { width: 100%; background: #000; border: 4px solid #333; image-rendering: pixelated; margin-bottom: 15px; box-shadow: 0 0 20px #000; }
-        .game-btn { width: 100%; background: #333; color: #fff; border: 1px solid #555; padding: 14px; margin: 6px 0; cursor: pointer; border-radius: 8px; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
-        .game-btn:hover { background: var(--accent); color: #fff; border-color: #fff; }
+        #nes-canvas { width: 100%; background: #000; border: 4px solid #333; image-rendering: pixelated; margin-bottom: 15px; }
+        .game-btn { width: 100%; background: #333; color: #fff; border: 1px solid #555; padding: 14px; margin: 6px 0; cursor: pointer; border-radius: 8px; font-weight: bold; }
+        .game-btn:hover { background: var(--accent); border-color: #fff; }
 
-        /* САЙДБАР И ЧАТ */
+        /* ЧАТ */
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; position: sticky; top: 80px; }
-        .chat-area { height: 350px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; font-size: 0.9rem; border-radius: 8px; border: 1px inset #222; }
-        .msg { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .chat-area { height: 350px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; font-size: 0.9rem; border-radius: 8px; }
+        .msg { margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
         .input-group { display: flex; gap: 8px; margin-top: 12px; }
-        .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 6px; outline: none; }
-        .input-group button { background: var(--accent); border: none; color: #fff; padding: 0 18px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 6px; }
+        .input-group button { background: var(--accent); border: none; color: #fff; padding: 0 18px; border-radius: 6px; cursor: pointer; }
 
         @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } #nes-sidebar { width: 100%; left: -100%; } }
     </style>
@@ -74,26 +73,25 @@
     <button class="nes-toggle" onclick="toggleNES()">🎮</button>
 
     <div id="nes-sidebar">
-        <h2 style="color:var(--accent); text-align:center; margin-bottom:20px; letter-spacing:2px;">DENDY ZONE</h2>
+        <h2 style="color:var(--accent); text-align:center;">DENDY ZONE</h2>
         <canvas id="nes-canvas" width="256" height="240"></canvas>
-        <div style="color:#888; font-size:0.75rem; text-align:center; margin-bottom:20px; line-height:1.4;">
-            Стрелки — Движение | <b>X</b> — Прыжок | <b>Z</b> — Огонь <br> <b>Enter</b> — Старт | <b>Shift</b> — Выбор
+        <div style="color:#888; font-size:0.7rem; text-align:center; margin-bottom:15px;">
+            СТРЕЛКИ — ДВИЖЕНИЕ | <b>X</b> — ПРЫЖОК | <b>Z</b> — ОГОНЬ <br> <b>ENTER</b> — СТАРТ
         </div>
         
-        <button class="game-btn" onclick="startNesGame('contra.nes')">🔫 ЗАПУСТИТЬ CONTRA</button>
+        <button class="game-btn" onclick="startNesGame('Contra.nes')">🔫 ИГРАТЬ В CONTRA</button>
         <button class="game-btn" onclick="startNesGame('tanks.nes')">🚜 ТАНЧИКИ</button>
-        <button class="game-btn" onclick="startNesGame('mario.nes')">🍄 МАРИО</button>
         
-        <button onclick="toggleNES()" style="width:100%; background:none; border:none; color:#555; cursor:pointer; margin-top:30px; font-size:0.8rem;">[ ЗАКРЫТЬ ПРИСТАВКУ ]</button>
+        <button onclick="toggleNES()" style="width:100%; background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">[ ЗАКРЫТЬ ]</button>
     </div>
 
     <nav>
-        <a href="#archive">Видеоархив</a> <a href="#posts">Стена</a> <a href="#chat">Курилка</a>
+        <a href="#archive">Архив</a> <a href="#posts">Стена</a> <a href="#chat">Чат</a>
     </nav>
 
     <header>
         <h1 class="logo">SAVE</h1>
-        <p style="color:#888; letter-spacing:3px; font-size:0.9rem;">VHS & 8-BIT NOSTALGIA ARCHIVE</p>
+        <p style="color:#888; letter-spacing:3px;">RETRO VIDEO PORTAL</p>
     </header>
 
     <div class="main-layout">
@@ -107,7 +105,7 @@
                     <h3 id="videoTitle" style="margin-top:15px; color:var(--accent);">7 ФИЛЬМОВ ПО РЕАЛЬНЫМ СОБЫТИЯМ</h3>
                 </div>
 
-                <div class="section-title">Твоя Видеотека</div>
+                <div class="section-title">Видеоархив</div>
                 <div class="video-grid">
                     <div class="video-item" onclick="changeVideo('5f10027e2df6f3a60796ec5750ae8255', '7 ФИЛЬМОВ ПО РЕАЛЬНЫМ СОБЫТИЯМ')">
                         <img src="pre1.jpg" onerror="this.src='bg.jpg'">
@@ -123,31 +121,20 @@
                     </div>
                 </div>
             </section>
-
-            <section id="posts">
-                <div class="section-title">Стена</div>
-                <div class="post">
-                    <h3 style="margin-top:0;">Добро пожаловать в SAVE!</h3>
-                    <p>Это твой личный архив. Выбирай кассеты в галерее выше или открывай эмулятор Dendy кнопкой слева. Наслаждайся!</p>
-                </div>
-            </section>
         </main>
 
         <aside>
             <div class="sidebar-box">
-                <div style="color:var(--accent); font-weight:bold; margin-bottom:10px; font-size:0.8rem;">ТВОЙ НИК</div>
+                <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">ВХОД</div>
                 <div class="input-group">
-                    <input type="text" id="userNameInput" placeholder="Имя...">
+                    <input type="text" id="userNameInput" placeholder="Ник...">
                     <button onclick="setUser()">OK</button>
                 </div>
-                <p id="userStatus" style="font-size:0.7rem; color:#666; margin-top:10px;"></p>
             </div>
 
             <div class="sidebar-box" id="chat">
-                <div style="color:var(--accent); font-weight:bold; margin-bottom:10px; font-size:0.8rem;">ЧАТ КУРИЛКИ</div>
-                <div class="chat-area" id="chatWindow">
-                    <div class="msg"><b>SAVE:</b> Здорово! Мы в эфире. Как тебе Contra?</div>
-                </div>
+                <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">ЧАТ</div>
+                <div class="chat-area" id="chatWindow"></div>
                 <div class="input-group">
                     <input type="text" id="chatInput" placeholder="Пиши..." onkeypress="if(event.keyCode==13) sendMessage()">
                     <button onclick="sendMessage()">➤</button>
@@ -157,14 +144,14 @@
     </div>
 
     <script>
-        // --- СМЕНА ВИДЕО ---
+        // СМЕНА ВИДЕО
         function changeVideo(id, title) {
             document.getElementById('mainPlayer').src = "https://rutube.ru/play/embed/" + id + "/";
             document.getElementById('videoTitle').innerText = title;
-            window.scrollTo({ top: 120, behavior: 'smooth' });
+            window.scrollTo({ top: 100, behavior: 'smooth' });
         }
 
-        // --- ЛОГИКА ЭМУЛЯТОРА ---
+        // ЭМУЛЯТОР
         var nes = new jsnes.NES({
             onFrame: function(frameBuffer) {
                 var canvas = document.getElementById('nes-canvas');
@@ -190,12 +177,10 @@
                     if(window.nesInterval) clearInterval(window.nesInterval);
                     window.nesInterval = setInterval(() => { nes.frame(); }, 1000 / 60);
                 } else {
-                    alert("Ошибка: файл " + romUrl + " не найден в папке или доступ заблокирован браузером.");
+                    alert("Не удалось найти файл: " + romUrl + ". Проверь имя файла на GitHub!");
                 }
             };
-            xhr.onerror = function() {
-                alert("Доступ к игре заблокирован. Сайт должен быть запущен на хостинге!");
-            };
+            xhr.onerror = function() { alert("Ошибка сети или блокировка CORS"); };
             xhr.send();
         }
 
@@ -203,11 +188,11 @@
         window.onkeydown = (e) => { if(keyboardMap[e.keyCode]!==undefined) { nes.buttonDown(1, keyboardMap[e.keyCode]); e.preventDefault(); } };
         window.onkeyup = (e) => { if(keyboardMap[e.keyCode]!==undefined) nes.buttonUp(1, keyboardMap[e.keyCode]); };
 
-        // --- ЧАТ ---
+        // ЧАТ
         let currentUser = localStorage.getItem('user') || "Гость";
         function setUser() {
             let n = document.getElementById('userNameInput').value.trim();
-            if(n) { currentUser = n; localStorage.setItem('user', n); document.getElementById('userStatus').innerText = "Привет, " + n; }
+            if(n) { currentUser = n; localStorage.setItem('user', n); alert("Ник сохранен!"); }
         }
         function sendMessage() {
             let i = document.getElementById('chatInput');
