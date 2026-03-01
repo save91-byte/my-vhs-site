@@ -2,159 +2,98 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAVE | VHS ARCHIVE & DENDY SYSTEM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAVE | VHS DYNAMIC ARCHIVE & DENDY</title>
     <script src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
     <style>
         :root { --accent: #ff4500; --card-bg: rgba(15, 15, 15, 0.95); --text: #ffffff; }
-        
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            color: var(--text); 
-            background: #111; 
-            overflow-x: hidden; 
-            background-image: url('bg.jpg'); /* Если есть фон */
-            background-attachment: fixed;
-            background-size: cover;
-        }
-
-        /* Навигация */
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; color: var(--text); background: url('bg.jpg') #111 no-repeat center center fixed; background-size: cover; }
         nav { background: rgba(0,0,0,0.9); padding: 15px; border-bottom: 2px solid var(--accent); text-align: center; position: sticky; top: 0; z-index: 100; }
         nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
+        
+        header { text-align: center; padding: 30px 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .logo { font-size: 5rem; letter-spacing: 5px; margin: 0; font-weight: 900; text-transform: uppercase; color: #fff; text-shadow: 2px 2px 0 #000, 0 0 20px rgba(255, 69, 0, 0.7); line-height: 1; }
+        .bulb { font-size: 4rem; color: var(--accent); animation: pulse 2s infinite alternate; text-shadow: 0 0 15px var(--accent); }
+        @keyframes pulse { from { opacity: 0.5; text-shadow: 0 0 5px var(--accent); } to { opacity: 1; text-shadow: 0 0 25px var(--accent); } }
 
-        /* Шапка */
-        header { text-align: center; padding: 20px; }
-        .logo { font-size: 4rem; letter-spacing: 5px; font-weight: 900; text-transform: uppercase; color: #fff; text-shadow: 0 0 20px var(--accent); margin: 0; }
-
-        /* Сетка контента */
-        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 25px; max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 20px; }
         .section-title { background: var(--accent); display: inline-block; padding: 6px 15px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; box-shadow: 4px 4px 0 #000; }
 
-        /* Видео Плеер */
         .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; }
-        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
+        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; }
         .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .video-item { background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; position: relative; transition: 0.3s; height: 180px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .video-item:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .mini-player { width: 100%; height: 100%; border: none; pointer-events: none; opacity: 0.8; }
+        .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
 
-        /* Библиотека кассет */
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-bottom: 40px; }
-        .video-item { background: #000; border: 2px solid #333; height: 110px; border-radius: 6px; position: relative; overflow: hidden; cursor: pointer; transition: 0.2s; }
-        .video-item:hover { border-color: var(--accent); }
-        .video-item iframe { width: 100%; height: 100%; pointer-events: none; border: none; opacity: 0.6; }
-        .delete-btn { position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: none; z-index: 10; }
+        .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(255, 0, 0, 0.8); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; display: none; font-size: 1.2rem; box-shadow: 0 2px 5px #000; }
+        
+        .post-delete-btn { float: right; background: none; border: 1px solid #ff4500; color: #ff4500; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; font-weight: bold; display: none; }
+        .post-delete-btn:hover { background: #ff4500; color: #fff; }
 
-        /* Новости */
-        .news-feed { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; }
-        .post { background: #000; border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; position: relative; }
-        .post-content { line-height: 1.5; }
-        .post-content iframe { width: 100% !important; border-radius: 6px; margin-bottom: 10px; border: 1px solid #333; }
-        .post-delete-btn { position: absolute; top: 10px; right: 10px; color: var(--accent); border: 1px solid var(--accent); background: none; display: none; cursor: pointer; padding: 2px 5px; font-size: 0.7rem; }
-
-        /* Сайдбар */
-        .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
-        .chat-area { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 10px; font-size: 0.85rem; border-radius: 8px; border: 1px solid #222; }
-        .input-group { display: flex; gap: 8px; margin-top: 10px; }
-        .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 4px; outline: none; }
-        .input-group button { background: var(--accent); border: none; color: white; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
-        /* Админка */
-        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-weight: bold; }
-        #adminBar button { background: white; border: none; margin-left: 10px; cursor: pointer; padding: 5px 15px; border-radius: 4px; font-weight: bold; }
         body.admin-active .delete-btn, body.admin-active .post-delete-btn { display: block; }
 
-        /* --- ИГРОВОЙ БЛОК (DENDY) --- */
-        #nes-screen { position: fixed; right: -100%; top: 0; width: 100%; height: 100%; background: #050505; z-index: 3000; transition: 0.5s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        #nes-screen.active { right: 0; }
-        #nes-canvas { width: 100%; max-width: 512px; background: #000; border: 4px solid #333; image-rendering: pixelated; aspect-ratio: 256/240; }
-        
-        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; width: 65px; height: 65px; border-radius: 50%; font-size: 2rem; border: 3px solid #fff; z-index: 1001; cursor: pointer; box-shadow: 0 0 20px rgba(255,69,0,0.5); }
+        .news-feed { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; }
+        .post { background: #000; border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; overflow: hidden; }
+        /* Стиль для видео-вставок в новостях */
+        .post iframe { width: 100% !important; border-radius: 6px; margin-bottom: 10px; border: 1px solid #333; }
 
-        /* Кнопки джойстика */
-        .controls-container { width: 100%; max-width: 500px; margin-top: 20px; user-select: none; }
-        .joypad-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
-        .d-pad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 10px; }
-        .btn-joy { background: #222; border: 3px solid #444; color: white; width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-        .btn-joy:active { background: var(--accent); border-color: #fff; }
+        .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
+        .chat-area { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; font-size: 0.85rem; border-radius: 8px; }
+        .input-group { display: flex; gap: 8px; margin-top: 10px; }
+        .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; outline: none; }
+        .input-group button { background: var(--accent); border: none; color: white; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        .action-btns { display: flex; gap: 20px; }
-        .btn-a, .btn-b { width: 75px; height: 75px; border-radius: 50%; background: #a00; border: 4px solid #600; color: white; font-size: 1.8rem; font-weight: bold; box-shadow: 0 5px 0 #400; }
-        .btn-a:active, .btn-b:active { transform: translateY(3px); box-shadow: 0 2px 0 #400; background: var(--accent); }
+        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-weight: bold; box-shadow: 0 5px 15px #000; }
+        #adminBar button { background: white; border: none; margin-left: 15px; cursor: pointer; padding: 4px 18px; font-weight: bold; border-radius: 4px; color: #000; }
 
-        .system-btns { display: flex; gap: 15px; justify-content: center; }
-        .btn-sys { background: #444; border: none; color: white; padding: 10px 20px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; z-index: 1001; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(255,69,0,0.5); }
+        #nes-sidebar { position: fixed; left: -400px; top: 0; width: 380px; height: 100%; background: #151515; border-right: 4px solid var(--accent); z-index: 1000; transition: 0.5s; padding: 20px; }
+        #nes-sidebar.active { left: 0; }
+        #nes-canvas { width: 100%; background: #000; image-rendering: pixelated; }
 
-        /* Адаптивность */
-        @media (max-width: 950px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .logo { font-size: 2.5rem; }
-            .main-layout { padding: 10px; }
-        }
+        @media (max-width: 950px) { .logo { font-size: 3rem; } .main-layout { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="adminBar">
-        🔐 ADMIN MODE | 
-        <button onclick="addVideo()">+ КАССЕТА</button>
+        🔐 ADMIN ACTIVE | 
+        <button onclick="addNewVideo()">+ ДОБАВИТЬ ВИДЕО</button>
         <button onclick="addPost()">+ НОВОСТЬ</button>
-        <button onclick="resetSystem()">СБРОС</button>
+        <button onclick="resetAll()">СБРОСИТЬ КЭШ</button>
         <button onclick="location.reload()">ВЫХОД</button>
     </div>
 
     <button class="nes-toggle" onclick="toggleNES()">🎮</button>
 
-    <div id="nes-screen">
-        <button onclick="toggleNES()" style="position:absolute; top:20px; right:20px; color:white; background:none; border:none; font-size:2.5rem; cursor:pointer;">✕</button>
-        
+    <div id="nes-sidebar">
+        <h2 style="color:var(--accent); text-align:center;">DENDY ZONE</h2>
         <canvas id="nes-canvas" width="256" height="240"></canvas>
-        
-        <div class="controls-container">
-            <div class="system-btns" style="margin-bottom: 20px;">
-                <button class="btn-sys" onpointerdown="nes.buttonDown(1, 2)" onpointerup="nes.buttonUp(1, 2)">SELECT</button>
-                <button class="btn-sys" style="background:#666" onpointerdown="nes.buttonDown(1, 3)" onpointerup="nes.buttonUp(1, 3)">START</button>
-            </div>
-
-            <div class="joypad-row">
-                <div class="d-pad">
-                    <div class="btn-joy" style="grid-area:u" onpointerdown="nes.buttonDown(1, 4)" onpointerup="nes.buttonUp(1, 4)">▲</div>
-                    <div class="btn-joy" style="grid-area:l" onpointerdown="nes.buttonDown(1, 6)" onpointerup="nes.buttonUp(1, 6)">◀</div>
-                    <div class="btn-joy" style="grid-area:r" onpointerdown="nes.buttonDown(1, 7)" onpointerup="nes.buttonUp(1, 7)">▶</div>
-                    <div class="btn-joy" style="grid-area:d" onpointerdown="nes.buttonDown(1, 5)" onpointerup="nes.buttonUp(1, 5)">▼</div>
-                </div>
-
-                <div class="action-btns">
-                    <button class="btn-b" onpointerdown="nes.buttonDown(1, 1)" onpointerup="nes.buttonUp(1, 1)">B</button>
-                    <button class="btn-a" onpointerdown="nes.buttonDown(1, 0)" onpointerup="nes.buttonUp(1, 0)">A</button>
-                </div>
-            </div>
-
-            <button onclick="loadGame('Contra.nes')" style="width:100%; padding:15px; background:var(--accent); border:none; color:white; font-weight:bold; border-radius:8px; cursor:pointer;">ЗАПУСТИТЬ КАССЕТУ: CONTRA</button>
-        </div>
+        <button style="width:100%; margin-top:10px; padding:10px; cursor:pointer;" onclick="startNesGame('Contra.nes')">CONTRA</button>
     </div>
 
-    <nav>
-        <a href="#archive">ВИДЕОАРХИВ</a>
-        <a href="#news">НОВОСТИ</a>
-    </nav>
-
+    <nav><a href="#archive">ВИДЕОАРХИВ</a> <a href="#news">НОВОСТИ</a></nav>
+    
     <header>
+        <span class="bulb">💡</span>
         <h1 class="logo">SAVE</h1>
     </header>
 
     <div class="main-layout">
         <main>
             <section id="archive">
-                <div class="section-title">Главный экран</div>
+                <div class="section-title">Главный плеер</div>
                 <div class="main-video-container">
                     <div class="video-wrap">
-                        <iframe id="mainPlayer" src="" allowfullscreen></iframe>
+                        <iframe id="mainPlayer" src="" allowFullScreen></iframe>
                     </div>
                 </div>
-
-                <div class="section-title">Твоя полка</div>
+                
+                <div class="section-title">Твоя библиотека</div>
                 <div class="video-grid" id="videoGrid"></div>
             </section>
 
@@ -168,141 +107,147 @@
             <div class="sidebar-box">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">ПОЗЫВНОЙ</div>
                 <div class="input-group">
-                    <input type="text" id="nickInput" placeholder="Введите имя...">
-                    <button onclick="applyNick()">OK</button>
+                    <input type="text" id="userNameInput" placeholder="Введите ник...">
+                    <button onclick="setUser()">OK</button>
                 </div>
             </div>
-
+            
             <div class="sidebar-box">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">КУРИЛКА</div>
-                <div id="chatBox" class="chat-area"></div>
+                <div id="chatWindow" class="chat-area"></div>
                 <div class="input-group">
-                    <input type="text" id="chatIn" placeholder="Пиши сюда..." onkeypress="if(event.keyCode==13) sendMsg()">
-                    <button onclick="sendMsg()">➤</button>
+                    <input type="text" id="chatInput" placeholder="Пиши..." onkeypress="if(event.keyCode==13) sendMessage()">
+                    <button onclick="sendMessage()">➤</button>
                 </div>
             </div>
         </aside>
     </div>
 
     <script>
-        const ADMIN_N = "SAVE", ADMIN_P = "90s";
+        const ADMIN_LOGIN = "SAVE", ADMIN_PASS = "90s";
 
-        // Данные
-        let vhsData = JSON.parse(localStorage.getItem('v_data')) || [
-            {type:'youtube', id:'dQw4w9WgXcQ'},
-            {type:'rutube', id:'5f10027e2df6f3a60796ec5750ae8255'}
+        const defaultVideos = [
+            { type: 'rutube', id: '5f10027e2df6f3a60796ec5750ae8255' },
+            { type: 'rutube', id: '9af2c2dbf03fccad84c890e4f79fc3e3' },
+            { type: 'youtube', id: 'dQw4w9WgXcQ' }
         ];
-        let postData = JSON.parse(localStorage.getItem('p_data')) || [
-            {time: '01.03.2026', text: 'Добро пожаловать в SAVE. Вставляй видео из ТГ прямо в новости!'}
-        ];
-        let myNick = localStorage.getItem('v_nick') || "Гость";
-        let isAdm = false;
 
-        // Инициализация видео
+        let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || defaultVideos;
+        let posts = JSON.parse(localStorage.getItem('vhs_posts')) || [{time:'01.03.2026', text:'Проект SAVE запущен.'}];
+        let userNick = localStorage.getItem('vhs_user') || "Гость";
+        let isAdmin = false;
+
         function renderArchive() {
             const grid = document.getElementById('videoGrid');
-            grid.innerHTML = vhsData.map((v, i) => {
+            grid.innerHTML = '';
+            vhsBox.forEach((v, index) => {
                 let url = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
-                return `
-                <div class="video-item">
-                    <button class="delete-btn" onclick="vhsData.splice(${i},1); saveAll(); renderArchive(); event.stopPropagation();">✕</button>
-                    <div style="position:absolute; inset:0; z-index:2" onclick="playVid('${url}')"></div>
-                    <iframe src="${url}"></iframe>
-                </div>`;
-            }).join('');
-            if(vhsData.length > 0) playVid(vhsData[0].type === 'youtube' ? `https://www.youtube.com/embed/${vhsData[0].id}` : `https://rutube.ru/play/embed/${vhsData[0].id}/`);
+                grid.innerHTML += `
+                    <div class="video-item">
+                        <button class="delete-btn" onclick="deleteVideo(${index})">🗑️</button>
+                        <div class="click-layer" onclick="changeVideo('${url}')"></div>
+                        <iframe class="mini-player" src="${url}"></iframe>
+                    </div>`;
+            });
+            if(vhsBox.length > 0) changeVideo(vhsBox[0].type === 'youtube' ? `https://www.youtube.com/embed/${vhsBox[0].id}` : `https://rutube.ru/play/embed/${vhsBox[0].id}/`);
         }
 
-        function playVid(url) { document.getElementById('mainPlayer').src = url; }
+        function changeVideo(url) { document.getElementById('mainPlayer').src = url; }
 
-        // Инициализация новостей
-        function renderPosts() {
-            document.getElementById('newsFeed').innerHTML = postData.map((p, i) => `
-                <div class="post">
-                    <button class="post-delete-btn" onclick="postData.splice(${i},1); saveAll(); renderPosts();">Удалить</button>
-                    <small style="color:var(--accent)">${p.time}</small>
-                    <div class="post-content" style="margin-top:10px;">${p.text}</div>
-                </div>`).reverse().join('');
-        }
-
-        // Админка
-        function applyNick() {
-            let n = document.getElementById('nickInput').value.trim();
-            if(n === ADMIN_N && prompt("ПАРОЛЬ:") === ADMIN_P) {
-                isAdm = true;
-                document.getElementById('adminBar').style.display = 'block';
-                document.body.classList.add('admin-active');
-                myNick = "ADMIN";
-                renderArchive(); renderPosts();
-            } else if(n) {
-                myNick = n; localStorage.setItem('v_nick', n); alert("Принято!");
+        function setUser() {
+            let val = document.getElementById('userNameInput').value.trim();
+            if(!val) return;
+            if(val === ADMIN_LOGIN) {
+                if(prompt("ПАРОЛЬ:") === ADMIN_PASS) {
+                    isAdmin = true;
+                    document.getElementById('adminBar').style.display = 'block';
+                    document.getElementById('mainBody').classList.add('admin-active');
+                    userNick = "ADMIN";
+                    renderArchive();
+                    renderPosts();
+                    alert("ДОСТУП ОТКРЫТ!");
+                }
+            } else {
+                userNick = val;
+                localStorage.setItem('vhs_user', userNick);
+                alert("Ник сохранен!");
             }
         }
 
-        function addVideo() {
-            let l = prompt("Ссылка на YouTube или Rutube:");
-            if(!l) return;
-            let id = "";
-            if(l.includes('youtube')) id = l.split('v=')[1]?.split('&')[0] || l.split('/').pop();
-            else if(l.includes('rutube')) id = l.split('/video/')[1]?.replace('/','');
-            
-            if(id) {
-                vhsData.push({type: l.includes('youtube')?'youtube':'rutube', id: id});
-                saveAll(); renderArchive();
+        function addNewVideo() {
+            if(!isAdmin) return;
+            let link = prompt("Ссылка:");
+            if(!link) return;
+            let vid = { type: '', id: '' };
+            if(link.includes('youtube.com') || link.includes('youtu.be')) {
+                vid.type = 'youtube'; vid.id = link.includes('v=') ? link.split('v=')[1].split('&')[0] : link.split('/').pop();
+            } else if(link.includes('rutube.ru')) {
+                vid.type = 'rutube'; vid.id = link.split('/video/')[1].replace('/', '');
+            }
+            if(vid.id) { vhsBox.push(vid); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive(); }
+        }
+
+        function deleteVideo(index) {
+            if(!isAdmin) return;
+            if(confirm("УДАЛИТЬ КАССЕТУ?")) {
+                vhsBox.splice(index, 1);
+                localStorage.setItem('vhs_box', JSON.stringify(vhsBox));
+                renderArchive();
             }
         }
 
         function addPost() {
-            let t = prompt("Текст новости. Если хочешь видео, вставь Embed-код целиком:");
-            if(t) {
-                postData.push({time: new Date().toLocaleString(), text: t});
-                saveAll(); renderPosts();
+            if(!isAdmin) return;
+            let t = prompt("Введите текст новости (можно вставлять HTML-код видео или плееров):");
+            if(t) { 
+                posts.push({time: new Date().toLocaleString(), text: t}); 
+                localStorage.setItem('vhs_posts', JSON.stringify(posts)); 
+                renderPosts(); 
             }
         }
 
-        function saveAll() {
-            localStorage.setItem('v_data', JSON.stringify(vhsData));
-            localStorage.setItem('p_data', JSON.stringify(postData));
+        function deletePost(index) {
+            if(!isAdmin) return;
+            if(confirm("УДАЛИТЬ ЭТУ НОВОСТЬ?")) {
+                posts.splice(index, 1);
+                localStorage.setItem('vhs_posts', JSON.stringify(posts));
+                renderPosts();
+            }
         }
 
-        // Чат
-        function sendMsg() {
-            let i = document.getElementById('chatIn');
+        function renderPosts() {
+            // Используем innerHTML для обработки вставок видео
+            document.getElementById('newsFeed').innerHTML = posts.map((p, index) => `
+                <div class="post">
+                    <button class="post-delete-btn" onclick="deletePost(${index})">Удалить</button>
+                    <small style="color:var(--accent)">${p.time}</small><br>
+                    <div class="post-content">${p.text}</div>
+                </div>`).reverse().join('');
+        }
+
+        function resetAll() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+
+        function sendMessage() {
+            let i = document.getElementById('chatInput');
             if(i.value.trim()) {
-                document.getElementById('chatBox').innerHTML += `<div><b>${myNick}:</b> ${i.value}</div>`;
+                document.getElementById('chatWindow').innerHTML += `<div><b>${userNick}:</b> ${i.value}</div>`;
                 i.value = "";
-                document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+                document.getElementById('chatWindow').scrollTop = document.getElementById('chatWindow').scrollHeight;
             }
         }
 
-        // --- ЛОГИКА ЭМУЛЯТОРА ---
         var nes = new jsnes.NES({ onFrame: (buf) => {
             var ctx = document.getElementById('nes-canvas').getContext('2d');
-            var img = ctx.getImageData(0,0,256,240), b32 = new Uint32Array(img.data.buffer);
+            var img = ctx.getImageData(0,0,256,240);
+            var b32 = new Uint32Array(img.data.buffer);
             for(var i=0; i<256*240; ++i) b32[i] = 0xFF000000 | buf[i];
             ctx.putImageData(img,0,0);
         }});
-
-        function toggleNES() { document.getElementById('nes-screen').classList.toggle('active'); }
-        
-        function loadGame(url) {
-            var req = new XMLHttpRequest();
-            req.open("GET", url, true);
-            req.overrideMimeType("text/plain; charset=x-user-defined");
-            req.onload = function() {
-                nes.loadROM(this.responseText);
-                setInterval(() => nes.frame(), 16);
-                alert("Игра загружена!");
-            };
-            req.send();
-        }
-
-        // Клавиатура для ПК
-        const keys = {38:4,40:5,37:6,39:7,88:0,90:1,16:2,13:3};
-        window.onkeydown = (e) => { if(keys[e.keyCode]!==undefined) nes.buttonDown(1, keys[e.keyCode]); };
-        window.onkeyup = (e) => { if(keys[e.keyCode]!==undefined) nes.buttonUp(1, keys[e.keyCode]); };
-
-        function resetSystem() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+        function toggleNES() { document.getElementById('nes-sidebar').classList.toggle('active'); }
+        function startNesGame(u) { var x = new XMLHttpRequest(); x.open("GET", u, true); x.overrideMimeType("text/plain; charset=x-user-defined"); x.onload = function() { nes.loadROM(this.responseText); setInterval(()=>nes.frame(), 16); }; x.send(); }
+        const k = {38:4,40:5,37:6,39:7,88:0,90:1,16:2,13:3};
+        window.onkeydown=(e)=>{if(k[e.keyCode]!==undefined){nes.buttonDown(1,k[e.keyCode]); e.preventDefault();}};
+        window.onkeyup=(e)=>{if(k[e.keyCode]!==undefined)nes.buttonUp(1,k[e.keyCode]);};
 
         renderArchive();
         renderPosts();
