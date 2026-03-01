@@ -31,7 +31,6 @@
 
         .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(255, 0, 0, 0.8); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; display: none; font-size: 1.2rem; box-shadow: 0 2px 5px #000; }
         
-        /* КНОПКА УДАЛЕНИЯ ПОСТА */
         .post-delete-btn { float: right; background: none; border: 1px solid #ff4500; color: #ff4500; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; font-weight: bold; display: none; }
         .post-delete-btn:hover { background: #ff4500; color: #fff; }
 
@@ -39,6 +38,8 @@
 
         .news-feed { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; }
         .post { background: #000; border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; overflow: hidden; }
+        /* Стиль для видео-вставок в новостях */
+        .post iframe { width: 100% !important; border-radius: 6px; margin-bottom: 10px; border: 1px solid #333; }
 
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
         .chat-area { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; font-size: 0.85rem; border-radius: 8px; }
@@ -151,7 +152,7 @@
             if(vhsBox.length > 0) changeVideo(vhsBox[0].type === 'youtube' ? `https://www.youtube.com/embed/${vhsBox[0].id}` : `https://rutube.ru/play/embed/${vhsBox[0].id}/`);
         }
 
-        function changeVideo(url) { document.getElementById('mainPlayer').src = url; window.scrollTo({ top: 100, behavior: 'smooth' }); }
+        function changeVideo(url) { document.getElementById('mainPlayer').src = url; }
 
         function setUser() {
             let val = document.getElementById('userNameInput').value.trim();
@@ -197,11 +198,14 @@
 
         function addPost() {
             if(!isAdmin) return;
-            let t = prompt("Текст новости:");
-            if(t) { posts.push({time: new Date().toLocaleString(), text: t}); localStorage.setItem('vhs_posts', JSON.stringify(posts)); renderPosts(); }
+            let t = prompt("Введите текст новости (можно вставлять HTML-код видео или плееров):");
+            if(t) { 
+                posts.push({time: new Date().toLocaleString(), text: t}); 
+                localStorage.setItem('vhs_posts', JSON.stringify(posts)); 
+                renderPosts(); 
+            }
         }
 
-        // --- НОВАЯ ФУНКЦИЯ: УДАЛЕНИЕ НОВОСТИ ---
         function deletePost(index) {
             if(!isAdmin) return;
             if(confirm("УДАЛИТЬ ЭТУ НОВОСТЬ?")) {
@@ -212,10 +216,12 @@
         }
 
         function renderPosts() {
+            // Используем innerHTML для обработки вставок видео
             document.getElementById('newsFeed').innerHTML = posts.map((p, index) => `
                 <div class="post">
                     <button class="post-delete-btn" onclick="deletePost(${index})">Удалить</button>
-                    <small style="color:var(--accent)">${p.time}</small><br>${p.text}
+                    <small style="color:var(--accent)">${p.time}</small><br>
+                    <div class="post-content">${p.text}</div>
                 </div>`).reverse().join('');
         }
 
