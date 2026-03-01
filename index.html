@@ -29,16 +29,16 @@
         .mini-player { width: 100%; height: 100%; border: none; pointer-events: none; opacity: 0.8; }
         .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
 
-        .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(255, 0, 0, 0.8); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; display: none; font-size: 1.2rem; box-shadow: 0 2px 5px #000; }
-        
-        /* КНОПКА УДАЛЕНИЯ ПОСТА */
+        .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(255, 0, 0, 0.8); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; display: none; font-size: 1.2rem; }
         .post-delete-btn { float: right; background: none; border: 1px solid #ff4500; color: #ff4500; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; font-weight: bold; display: none; }
-        .post-delete-btn:hover { background: #ff4500; color: #fff; }
 
         body.admin-active .delete-btn, body.admin-active .post-delete-btn { display: block; }
 
         .news-feed { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #333; }
-        .post { background: #000; border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; overflow: hidden; }
+        .post { background: #000; border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
+        
+        /* СТИЛЬ ДЛЯ ВИДЕО В НОВОСТЯХ */
+        .post-video { width: 100%; border-radius: 6px; margin-bottom: 10px; border: 1px solid #333; background: #000; aspect-ratio: 16/9; }
 
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
         .chat-area { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; font-size: 0.85rem; border-radius: 8px; }
@@ -46,10 +46,10 @@
         .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; outline: none; }
         .input-group button { background: var(--accent); border: none; color: white; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-weight: bold; box-shadow: 0 5px 15px #000; }
+        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-weight: bold; }
         #adminBar button { background: white; border: none; margin-left: 15px; cursor: pointer; padding: 4px 18px; font-weight: bold; border-radius: 4px; color: #000; }
 
-        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; z-index: 1001; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(255,69,0,0.5); }
+        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; z-index: 1001; font-size: 1.5rem; }
         #nes-sidebar { position: fixed; left: -400px; top: 0; width: 380px; height: 100%; background: #151515; border-right: 4px solid var(--accent); z-index: 1000; transition: 0.5s; padding: 20px; }
         #nes-sidebar.active { left: 0; }
         #nes-canvas { width: 100%; background: #000; image-rendering: pixelated; }
@@ -68,7 +68,6 @@
     </div>
 
     <button class="nes-toggle" onclick="toggleNES()">🎮</button>
-
     <div id="nes-sidebar">
         <h2 style="color:var(--accent); text-align:center;">DENDY ZONE</h2>
         <canvas id="nes-canvas" width="256" height="240"></canvas>
@@ -76,32 +75,23 @@
     </div>
 
     <nav><a href="#archive">ВИДЕОАРХИВ</a> <a href="#news">НОВОСТИ</a></nav>
-    
-    <header>
-        <span class="bulb">💡</span>
-        <h1 class="logo">SAVE</h1>
-    </header>
+    <header><span class="bulb">💡</span><h1 class="logo">SAVE</h1></header>
 
     <div class="main-layout">
         <main>
             <section id="archive">
                 <div class="section-title">Главный плеер</div>
                 <div class="main-video-container">
-                    <div class="video-wrap">
-                        <iframe id="mainPlayer" src="" allowFullScreen></iframe>
-                    </div>
+                    <div class="video-wrap"><iframe id="mainPlayer" src="" allowFullScreen></iframe></div>
                 </div>
-                
                 <div class="section-title">Твоя библиотека</div>
                 <div class="video-grid" id="videoGrid"></div>
             </section>
-
             <section id="news">
                 <div class="section-title">Стена</div>
                 <div id="newsFeed" class="news-feed"></div>
             </section>
         </main>
-
         <aside>
             <div class="sidebar-box">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">ПОЗЫВНОЙ</div>
@@ -110,7 +100,6 @@
                     <button onclick="setUser()">OK</button>
                 </div>
             </div>
-            
             <div class="sidebar-box">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">КУРИЛКА</div>
                 <div id="chatWindow" class="chat-area"></div>
@@ -124,15 +113,8 @@
 
     <script>
         const ADMIN_LOGIN = "SAVE", ADMIN_PASS = "90s";
-
-        const defaultVideos = [
-            { type: 'rutube', id: '5f10027e2df6f3a60796ec5750ae8255' },
-            { type: 'rutube', id: '9af2c2dbf03fccad84c890e4f79fc3e3' },
-            { type: 'youtube', id: 'dQw4w9WgXcQ' }
-        ];
-
-        let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || defaultVideos;
-        let posts = JSON.parse(localStorage.getItem('vhs_posts')) || [{time:'01.03.2026', text:'Проект SAVE запущен.'}];
+        let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || [{ type: 'rutube', id: '5f10027e2df6f3a60796ec5750ae8255' }];
+        let posts = JSON.parse(localStorage.getItem('vhs_posts')) || [{time:'01.03.2026', text:'Проект SAVE запущен.', vidUrl:''}];
         let userNick = localStorage.getItem('vhs_user') || "Гость";
         let isAdmin = false;
 
@@ -141,94 +123,90 @@
             grid.innerHTML = '';
             vhsBox.forEach((v, index) => {
                 let url = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
-                grid.innerHTML += `
-                    <div class="video-item">
-                        <button class="delete-btn" onclick="deleteVideo(${index})">🗑️</button>
-                        <div class="click-layer" onclick="changeVideo('${url}')"></div>
-                        <iframe class="mini-player" src="${url}"></iframe>
-                    </div>`;
+                grid.innerHTML += `<div class="video-item"><button class="delete-btn" onclick="deleteVideo(${index})">🗑️</button><div class="click-layer" onclick="changeVideo('${url}')"></div><iframe class="mini-player" src="${url}"></iframe></div>`;
             });
             if(vhsBox.length > 0) changeVideo(vhsBox[0].type === 'youtube' ? `https://www.youtube.com/embed/${vhsBox[0].id}` : `https://rutube.ru/play/embed/${vhsBox[0].id}/`);
         }
 
-        function changeVideo(url) { document.getElementById('mainPlayer').src = url; window.scrollTo({ top: 100, behavior: 'smooth' }); }
+        function changeVideo(url) { document.getElementById('mainPlayer').src = url; }
 
         function setUser() {
             let val = document.getElementById('userNameInput').value.trim();
-            if(!val) return;
-            if(val === ADMIN_LOGIN) {
-                if(prompt("ПАРОЛЬ:") === ADMIN_PASS) {
-                    isAdmin = true;
-                    document.getElementById('adminBar').style.display = 'block';
-                    document.getElementById('mainBody').classList.add('admin-active');
-                    userNick = "ADMIN";
-                    renderArchive();
-                    renderPosts();
-                    alert("ДОСТУП ОТКРЫТ!");
-                }
-            } else {
-                userNick = val;
-                localStorage.setItem('vhs_user', userNick);
-                alert("Ник сохранен!");
-            }
+            if(val === ADMIN_LOGIN && prompt("ПАРОЛЬ:") === ADMIN_PASS) {
+                isAdmin = true;
+                document.getElementById('adminBar').style.display = 'block';
+                document.getElementById('mainBody').classList.add('admin-active');
+                userNick = "ADMIN"; renderArchive(); renderPosts();
+            } else if(val) { userNick = val; localStorage.setItem('vhs_user', userNick); }
         }
 
         function addNewVideo() {
             if(!isAdmin) return;
-            let link = prompt("Ссылка:");
+            let link = prompt("Ссылка для архива (YouTube/Rutube):");
             if(!link) return;
             let vid = { type: '', id: '' };
-            if(link.includes('youtube.com') || link.includes('youtu.be')) {
+            if(link.includes('youtube') || link.includes('youtu.be')) {
                 vid.type = 'youtube'; vid.id = link.includes('v=') ? link.split('v=')[1].split('&')[0] : link.split('/').pop();
-            } else if(link.includes('rutube.ru')) {
+            } else if(link.includes('rutube')) {
                 vid.type = 'rutube'; vid.id = link.split('/video/')[1].replace('/', '');
             }
             if(vid.id) { vhsBox.push(vid); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive(); }
         }
 
-        function deleteVideo(index) {
-            if(!isAdmin) return;
-            if(confirm("УДАЛИТЬ КАССЕТУ?")) {
-                vhsBox.splice(index, 1);
-                localStorage.setItem('vhs_box', JSON.stringify(vhsBox));
-                renderArchive();
-            }
-        }
-
+        // --- УЛУЧШЕННОЕ ДОБАВЛЕНИЕ ПОСТА ---
         function addPost() {
             if(!isAdmin) return;
-            let t = prompt("Текст новости:");
-            if(t) { posts.push({time: new Date().toLocaleString(), text: t}); localStorage.setItem('vhs_posts', JSON.stringify(posts)); renderPosts(); }
-        }
-
-        // --- НОВАЯ ФУНКЦИЯ: УДАЛЕНИЕ НОВОСТИ ---
-        function deletePost(index) {
-            if(!isAdmin) return;
-            if(confirm("УДАЛИТЬ ЭТУ НОВОСТЬ?")) {
-                posts.splice(index, 1);
-                localStorage.setItem('vhs_posts', JSON.stringify(posts));
-                renderPosts();
+            let text = prompt("Введите текст новости:");
+            let vidLink = prompt("Вставьте ссылку на видео (если есть, YouTube/Rutube или прямая ссылка):", "");
+            
+            let finalEmbed = "";
+            if(vidLink) {
+                if(vidLink.includes('youtube') || vidLink.includes('youtu.be')) {
+                    let id = vidLink.includes('v=') ? vidLink.split('v=')[1].split('&')[0] : vidLink.split('/').pop();
+                    finalEmbed = `https://www.youtube.com/embed/${id}`;
+                } else if(vidLink.includes('rutube')) {
+                    let id = vidLink.split('/video/')[1].replace('/', '');
+                    finalEmbed = `https://rutube.ru/play/embed/${id}/`;
+                } else {
+                    finalEmbed = vidLink; // Если прямая ссылка на файл или TG embed
+                }
             }
+
+            posts.push({time: new Date().toLocaleString(), text: text, vidUrl: finalEmbed});
+            localStorage.setItem('vhs_posts', JSON.stringify(posts));
+            renderPosts();
         }
 
         function renderPosts() {
-            document.getElementById('newsFeed').innerHTML = posts.map((p, index) => `
+            document.getElementById('newsFeed').innerHTML = posts.map((p, index) => {
+                let videoHTML = p.vidUrl ? `<iframe class="post-video" src="${p.vidUrl}" allowfullscreen></iframe>` : "";
+                return `
                 <div class="post">
                     <button class="post-delete-btn" onclick="deletePost(${index})">Удалить</button>
-                    <small style="color:var(--accent)">${p.time}</small><br>${p.text}
-                </div>`).reverse().join('');
+                    ${videoHTML}
+                    <small style="color:var(--accent)">${p.time}</small><br>
+                    <div style="margin-top:10px;">${p.text}</div>
+                </div>`;
+            }).reverse().join('');
         }
 
-        function resetAll() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+        function deletePost(index) {
+            if(confirm("УДАЛИТЬ?")) { posts.splice(index, 1); localStorage.setItem('vhs_posts', JSON.stringify(posts)); renderPosts(); }
+        }
+
+        function deleteVideo(index) {
+            if(confirm("УДАЛИТЬ КАССЕТУ?")) { vhsBox.splice(index, 1); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive(); }
+        }
 
         function sendMessage() {
             let i = document.getElementById('chatInput');
             if(i.value.trim()) {
                 document.getElementById('chatWindow').innerHTML += `<div><b>${userNick}:</b> ${i.value}</div>`;
-                i.value = "";
-                document.getElementById('chatWindow').scrollTop = document.getElementById('chatWindow').scrollHeight;
+                i.value = ""; document.getElementById('chatWindow').scrollTop = document.getElementById('chatWindow').scrollHeight;
             }
         }
+
+        function resetAll() { if(confirm("Сбросить?")) { localStorage.clear(); location.reload(); } }
 
         var nes = new jsnes.NES({ onFrame: (buf) => {
             var ctx = document.getElementById('nes-canvas').getContext('2d');
@@ -239,12 +217,8 @@
         }});
         function toggleNES() { document.getElementById('nes-sidebar').classList.toggle('active'); }
         function startNesGame(u) { var x = new XMLHttpRequest(); x.open("GET", u, true); x.overrideMimeType("text/plain; charset=x-user-defined"); x.onload = function() { nes.loadROM(this.responseText); setInterval(()=>nes.frame(), 16); }; x.send(); }
-        const k = {38:4,40:5,37:6,39:7,88:0,90:1,16:2,13:3};
-        window.onkeydown=(e)=>{if(k[e.keyCode]!==undefined){nes.buttonDown(1,k[e.keyCode]); e.preventDefault();}};
-        window.onkeyup=(e)=>{if(k[e.keyCode]!==undefined)nes.buttonUp(1,k[e.keyCode]);};
 
-        renderArchive();
-        renderPosts();
+        renderArchive(); renderPosts();
     </script>
 </body>
 </html>
