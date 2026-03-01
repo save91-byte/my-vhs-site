@@ -7,40 +7,25 @@
     <script src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
     <style>
         :root { --accent: #ff4500; --card-bg: rgba(15, 15, 15, 0.95); --text: #ffffff; }
-        
         body {
             margin: 0; font-family: 'Segoe UI', sans-serif; color: var(--text);
             background: url('bg.jpg') no-repeat center center fixed;
             background-size: cover; background-color: #111;
         }
-
         nav { background: rgba(0,0,0,0.9); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--accent); text-align: center; }
         nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-        nav a:hover { color: var(--accent); }
-
         header { text-align: center; padding: 30px; }
         .logo { font-size: clamp(2.5rem, 8vw, 4.5rem); letter-spacing: 12px; margin: 0; text-shadow: 2px 2px 15px #000; font-weight: 900; }
-
         .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 20px; }
         .section-title { background: var(--accent); display: inline-block; padding: 6px 15px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; box-shadow: 4px 4px 0 #000; }
-
-        /* ВИДЕО ПЛЕЕР */
         .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; }
         .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
         .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-
-        /* ГАЛЕРЕЯ КАССЕТ */
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .video-item { 
-            background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; 
-            transition: 0.3s; border: 1px solid #444; 
-        }
+        .video-item { background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #444; }
         .video-item:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 8px 20px rgba(255,69,0,0.4); }
         .video-item img { width: 100%; height: 130px; object-fit: cover; opacity: 0.6; }
-        .video-item:hover img { opacity: 1; }
         .video-item-info { padding: 12px; font-size: 0.8rem; font-weight: bold; text-align: center; background: #111; text-transform: uppercase; }
-
-        /* ЭМУЛЯТОР СБОКУ */
         #nes-sidebar {
             position: fixed; left: -400px; top: 0; width: 380px; height: 100%; 
             background: #151515; border-right: 4px solid var(--accent); z-index: 1000;
@@ -52,19 +37,14 @@
             color: white; border: 2px solid #fff; width: 70px; height: 70px; border-radius: 50%; cursor: pointer;
             z-index: 1001; font-size: 2rem; box-shadow: 0 0 25px rgba(255,69,0,0.6);
         }
-
         #nes-canvas { width: 100%; background: #000; border: 4px solid #333; image-rendering: pixelated; margin-bottom: 15px; }
         .game-btn { width: 100%; background: #333; color: #fff; border: 1px solid #555; padding: 14px; margin: 6px 0; cursor: pointer; border-radius: 8px; font-weight: bold; }
-        .game-btn:hover { background: var(--accent); border-color: #fff; }
-
-        /* САЙДБАР / ЧАТ */
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; position: sticky; top: 80px; }
         .chat-area { height: 350px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; font-size: 0.9rem; border-radius: 8px; }
         .msg { margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
         .input-group { display: flex; gap: 8px; margin-top: 12px; }
         .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 6px; }
         .input-group button { background: var(--accent); border: none; color: #fff; padding: 0 18px; border-radius: 6px; cursor: pointer; }
-
         @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } #nes-sidebar { width: 100%; left: -100%; } }
     </style>
 </head>
@@ -80,15 +60,12 @@
             <b>X</b> — ПРЫЖОК | <b>Z</b> — ОГОНЬ<br>
             <b>ENTER</b> — СТАРТ | <b>SHIFT</b> — ВЫБОР
         </div>
-        
         <button class="game-btn" onclick="startNesGame('Contra.nes')">🔫 ИГРАТЬ В CONTRA</button>
-        <button class="game-btn" onclick="startNesGame('tanks.nes')">🚜 ТАНЧИКИ</button>
-        
-        <button onclick="toggleNES()" style="width:100%; background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">[ ЗАКРЫТЬ ПРИСТАВКУ ]</button>
+        <button onclick="toggleNES()" style="width:100%; background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">[ ЗАКРЫТЬ ]</button>
     </div>
 
     <nav>
-        <a href="#archive">Архив Видео</a> <a href="#posts">Стена</a> <a href="#chat">Чат</a>
+        <a href="#archive">Архив</a> <a href="#posts">Стена</a> <a href="#chat">Чат</a>
     </nav>
 
     <header>
@@ -106,7 +83,6 @@
                     </div>
                     <h3 id="videoTitle" style="margin-top:15px; color:var(--accent);">7 ФИЛЬМОВ ПО РЕАЛЬНЫМ СОБЫТИЯМ</h3>
                 </div>
-
                 <div class="section-title">Видеоархив</div>
                 <div class="video-grid">
                     <div class="video-item" onclick="changeVideo('5f10027e2df6f3a60796ec5750ae8255', '7 ФИЛЬМОВ ПО РЕАЛЬНЫМ СОБЫТИЯМ')">
@@ -124,7 +100,6 @@
                 </div>
             </section>
         </main>
-
         <aside>
             <div class="sidebar-box">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">ВХОД</div>
@@ -133,7 +108,6 @@
                     <button onclick="setUser()">OK</button>
                 </div>
             </div>
-
             <div class="sidebar-box" id="chat">
                 <div style="color:var(--accent); font-weight:bold; margin-bottom:10px;">ЧАТ</div>
                 <div class="chat-area" id="chatWindow"></div>
@@ -146,14 +120,12 @@
     </div>
 
     <script>
-        // --- ВИДЕО ---
         function changeVideo(id, title) {
             document.getElementById('mainPlayer').src = "https://rutube.ru/play/embed/" + id + "/";
             document.getElementById('videoTitle').innerText = title;
             window.scrollTo({ top: 100, behavior: 'smooth' });
         }
 
-        // --- ЭМУЛЯТОР ---
         var nes = new jsnes.NES({
             onFrame: function(frameBuffer) {
                 var canvas = document.getElementById('nes-canvas');
@@ -178,23 +150,22 @@
                     nes.loadROM(this.responseText);
                     if(window.nesInterval) clearInterval(window.nesInterval);
                     window.nesInterval = setInterval(() => { nes.frame(); }, 1000 / 60);
-                } else {
-                    alert("Ошибка: файл " + romUrl + " не найден на GitHub.");
-                }
+                } else { alert("Файл не найден."); }
             };
             xhr.send();
         }
 
-        // КАРТА КНОПОК (СТРОГО ПО СТАНДАРТУ JSNES ДЛЯ PLAYER 1)
+        // --- ТОЧНАЯ НАСТРОЙКА КЛАВИШ ДЛЯ JSNES ---
+        // 0: A, 1: B, 2: SELECT, 3: START, 4: UP, 5: DOWN, 6: LEFT, 7: RIGHT
         const keyboardMap = {
-            38: 0, // Up (Стрелка вверх)
-            40: 1, // Down (Стрелка вниз)
-            37: 2, // Left (Стрелка влево)
-            39: 3, // Right (Стрелка вправо)
-            88: 4, // Button A -> X (Прыжок)
-            90: 5, // Button B -> Z (Огонь)
-            16: 6, // Select -> Shift
-            13: 7  // Start -> Enter
+            38: 4, // Up -> Стрелка вверх
+            40: 5, // Down -> Стрелка вниз
+            37: 6, // Left -> Стрелка влево
+            39: 7, // Right -> Стрелка вправо
+            88: 0, // A (Jump) -> Клавиша X
+            90: 1, // B (Fire) -> Клавиша Z
+            16: 2, // Select -> Клавиша Shift
+            13: 3  // Start -> Клавиша Enter
         };
 
         window.addEventListener("keydown", function(e) {
@@ -211,7 +182,6 @@
             }
         });
 
-        // --- ЧАТ ---
         let currentUser = localStorage.getItem('user') || "Гость";
         function setUser() {
             let n = document.getElementById('userNameInput').value.trim();
