@@ -23,20 +23,18 @@
         .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .video-item { background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; position: relative; min-height: 180px; height: 180px; }
-        .mini-player { width: 100%; height: 100%; border: none; pointer-events: none; opacity: 0.8; position: absolute; }
-        .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
+        .video-item { background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; position: relative; min-height: 180px; height: 180px; background-size: cover; background-position: center; }
+        .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; background: rgba(0,0,0,0.2); transition: 0.3s; }
+        .click-layer:hover { background: rgba(0,0,0,0); }
 
         .delete-btn, .post-delete-btn { display: none; background: red; color: white; border: none; cursor: pointer; position: absolute; z-index: 20; }
         body.admin-active .delete-btn, body.admin-active .post-delete-btn { display: block; }
         #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-size: 0.9rem; }
 
-        /* ЭМУЛЯТОР */
         #nes-sidebar { position: fixed; left: -420px; top: 0; width: 400px; height: 100%; background: #111; border-right: 4px solid var(--accent); z-index: 1000; transition: 0.4s; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         #nes-sidebar.active { left: 0; }
         #nes-canvas { width: 100%; background: #000; border: 4px solid #333; border-radius: 4px; }
 
-        /* ГЕЙМПАД */
         .touch-controls { display: none; margin-top: 20px; padding-bottom: 60px; user-select: none; }
         @media (max-width: 950px) { 
             .logo { font-size: 3rem; } .main-layout { grid-template-columns: 1fr; } 
@@ -44,8 +42,6 @@
         }
 
         .joypad-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 30px; }
-        
-        /* Умная крестовина */
         .dpad-container { position: relative; width: 160px; height: 160px; background: #222; border-radius: 20px; touch-action: none; }
         .dpad-btn-vis { position: absolute; background: #333; border: 1px solid #444; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; font-size: 1.2rem; pointer-events: none; }
         .d-u { top: 5px; left: 55px; } .d-d { bottom: 5px; left: 55px; } .d-l { left: 5px; top: 55px; } .d-r { right: 5px; top: 55px; }
@@ -111,7 +107,7 @@
                 <div class="section-title">VHS ПЛЕЕР</div>
                 <div class="main-video-container"><div class="video-wrap"><iframe id="mainPlayer" src="" allowFullScreen></iframe></div></div>
                 <div class="section-title">БИБЛИОТЕКА</div>
-                <div class="video-grid" id="videoGrid"></div>
+                <div id="videoGrid" class="video-grid"></div>
             </section>
             <section id="news">
                 <div class="section-title">СТЕНА</div>
@@ -143,12 +139,23 @@
 
         function renderArchive() {
             document.getElementById('videoGrid').innerHTML = vhsBox.map((v, i) => {
-                let u = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
-                return `<div class="video-item"><button class="delete-btn" onclick="deleteVideo(${i})">X</button><div class="click-layer" onclick="changeVideo('${u}')"></div><iframe class="mini-player" src="${u}"></iframe></div>`;
+                let thumb = v.type === 'youtube' ? `https://img.youtube.com/vi/${v.id}/mqdefault.jpg` : `https://static.rutube.ru/static/img/logo-rt.png`;
+                let embed = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
+                return `
+                <div class="video-item" style="background-image: url('${thumb}')">
+                    <button class="delete-btn" onclick="deleteVideo(${i})">X</button>
+                    <div class="click-layer" onclick="changeVideo('${embed}')"></div>
+                    ${v.type === 'rutube' ? '<div style="position:absolute;bottom:5px;right:5px;font-size:10px;background:rgba(0,0,0,0.7);padding:2px 5px;">RUTUBE</div>' : ''}
+                </div>`;
             }).join('');
-            if(vhsBox.length > 0) changeVideo(vhsBox[0].type === 'youtube' ? `https://www.youtube.com/embed/${vhsBox[0].id}` : `https://rutube.ru/play/embed/${vhsBox[0].id}/`);
+            if(vhsBox.length > 0 && !document.getElementById('mainPlayer').src) {
+                let first = vhsBox[0];
+                changeVideo(first.type === 'youtube' ? `https://www.youtube.com/embed/${first.id}` : `https://rutube.ru/play/embed/${first.id}/`);
+            }
         }
+
         function changeVideo(url) { document.getElementById('mainPlayer').src = url; }
+        
         function setUser() {
             let val = document.getElementById('userNameInput').value.trim();
             if(val === ADMIN_LOGIN && prompt("PASS:") === ADMIN_PASS) {
@@ -156,11 +163,16 @@
                 document.getElementById('mainBody').classList.add('admin-active'); userNick = "ADMIN"; renderArchive(); renderPosts();
             } else if(val) { userNick = val; localStorage.setItem('vhs_user', val); }
         }
+
         function addNewVideo() {
             let l = prompt("URL:"); if(!l) return;
-            let vid = { type: l.includes('youtube')?'youtube':'rutube', id: l.includes('v=')?l.split('v=')[1].split('&')[0]:l.split('/').pop() };
+            let id = "";
+            if(l.includes('v=')) { id = l.split('v=')[1].split('&')[0]; } 
+            else { id = l.split('?')[0].split('/').filter(s => s !== '').pop(); }
+            let vid = { type: (l.includes('youtube') || l.includes('youtu.be')) ? 'youtube' : 'rutube', id: id };
             vhsBox.push(vid); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive();
         }
+
         function deleteVideo(i) { vhsBox.splice(i, 1); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive(); }
         function addPost() { let t = prompt("Text:"); if(t) { posts.push({time: new Date().toLocaleString(), text: t}); localStorage.setItem('vhs_posts', JSON.stringify(posts)); renderPosts(); } }
         function renderPosts() { document.getElementById('newsFeed').innerHTML = posts.map((p, i) => `<div class="post"><button class="post-delete-btn" onclick="posts.splice(${i},1);renderPosts()">X</button><small>${p.time}</small><div>${p.text}</div></div>`).reverse().join(''); }
@@ -177,13 +189,11 @@
         function btnD(k) { nes.buttonDown(1, k); }
         function btnU(k) { nes.buttonUp(1, k); }
 
-        /* УМНЫЙ ТАЧ ДЛЯ ДИАГОНАЛЕЙ */
         const dpad = document.getElementById('touchDpad');
-        const activeKeys = new Set();
         function handleDpad(e) {
             if (e.type === 'pointerup' || e.type === 'pointercancel') {
                 [4,5,6,7].forEach(k => { nes.buttonUp(1, k); document.getElementById('vis-'+k).classList.remove('d-active'); });
-                activeKeys.clear(); return;
+                return;
             }
             const rect = dpad.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width;
