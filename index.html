@@ -24,7 +24,7 @@
         .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 20px; }
         .section-title { background: var(--accent); display: inline-block; padding: 6px 15px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; box-shadow: 4px 4px 0 #000; }
 
-        /* ПЛЕЕР */
+        /* ВИДЕО ПЛЕЕР */
         .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; }
         .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
         .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
@@ -40,7 +40,7 @@
         .video-item:hover img { opacity: 1; }
         .video-item-info { padding: 12px; font-size: 0.8rem; font-weight: bold; text-align: center; background: #111; text-transform: uppercase; }
 
-        /* ЭМУЛЯТОР СЛЕВА */
+        /* ЭМУЛЯТОР СБОКУ */
         #nes-sidebar {
             position: fixed; left: -400px; top: 0; width: 380px; height: 100%; 
             background: #151515; border-right: 4px solid var(--accent); z-index: 1000;
@@ -57,7 +57,7 @@
         .game-btn { width: 100%; background: #333; color: #fff; border: 1px solid #555; padding: 14px; margin: 6px 0; cursor: pointer; border-radius: 8px; font-weight: bold; }
         .game-btn:hover { background: var(--accent); border-color: #fff; }
 
-        /* ЧАТ */
+        /* САЙДБАР / ЧАТ */
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; position: sticky; top: 80px; }
         .chat-area { height: 350px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; font-size: 0.9rem; border-radius: 8px; }
         .msg { margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
@@ -75,23 +75,25 @@
     <div id="nes-sidebar">
         <h2 style="color:var(--accent); text-align:center;">DENDY ZONE</h2>
         <canvas id="nes-canvas" width="256" height="240"></canvas>
-        <div style="color:#888; font-size:0.7rem; text-align:center; margin-bottom:15px;">
-            СТРЕЛКИ — ДВИЖЕНИЕ | <b>X</b> — ПРЫЖОК | <b>Z</b> — ОГОНЬ <br> <b>ENTER</b> — СТАРТ
+        <div style="color:#888; font-size:0.75rem; text-align:center; margin-bottom:15px; line-height:1.5;">
+            <b>СТРЕЛКИ</b> — ДВИЖЕНИЕ<br>
+            <b>X</b> — ПРЫЖОК | <b>Z</b> — ОГОНЬ<br>
+            <b>ENTER</b> — СТАРТ | <b>SHIFT</b> — ВЫБОР
         </div>
         
         <button class="game-btn" onclick="startNesGame('Contra.nes')">🔫 ИГРАТЬ В CONTRA</button>
         <button class="game-btn" onclick="startNesGame('tanks.nes')">🚜 ТАНЧИКИ</button>
         
-        <button onclick="toggleNES()" style="width:100%; background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">[ ЗАКРЫТЬ ]</button>
+        <button onclick="toggleNES()" style="width:100%; background:none; border:none; color:#555; cursor:pointer; margin-top:20px;">[ ЗАКРЫТЬ ПРИСТАВКУ ]</button>
     </div>
 
     <nav>
-        <a href="#archive">Архив</a> <a href="#posts">Стена</a> <a href="#chat">Чат</a>
+        <a href="#archive">Архив Видео</a> <a href="#posts">Стена</a> <a href="#chat">Чат</a>
     </nav>
 
     <header>
         <h1 class="logo">SAVE</h1>
-        <p style="color:#888; letter-spacing:3px;">RETRO VIDEO PORTAL</p>
+        <p style="color:#888; letter-spacing:3px;">RETRO NOSTALGIA PORTAL</p>
     </header>
 
     <div class="main-layout">
@@ -144,14 +146,14 @@
     </div>
 
     <script>
-        // СМЕНА ВИДЕО
+        // --- ВИДЕО ---
         function changeVideo(id, title) {
             document.getElementById('mainPlayer').src = "https://rutube.ru/play/embed/" + id + "/";
             document.getElementById('videoTitle').innerText = title;
             window.scrollTo({ top: 100, behavior: 'smooth' });
         }
 
-        // ЭМУЛЯТОР
+        // --- ЭМУЛЯТОР ---
         var nes = new jsnes.NES({
             onFrame: function(frameBuffer) {
                 var canvas = document.getElementById('nes-canvas');
@@ -177,18 +179,39 @@
                     if(window.nesInterval) clearInterval(window.nesInterval);
                     window.nesInterval = setInterval(() => { nes.frame(); }, 1000 / 60);
                 } else {
-                    alert("Не удалось найти файл: " + romUrl + ". Проверь имя файла на GitHub!");
+                    alert("Ошибка: файл " + romUrl + " не найден на GitHub.");
                 }
             };
-            xhr.onerror = function() { alert("Ошибка сети или блокировка CORS"); };
             xhr.send();
         }
 
-        const keyboardMap = { 38:0, 40:1, 37:2, 39:3, 88:4, 90:5, 13:7, 16:6 };
-        window.onkeydown = (e) => { if(keyboardMap[e.keyCode]!==undefined) { nes.buttonDown(1, keyboardMap[e.keyCode]); e.preventDefault(); } };
-        window.onkeyup = (e) => { if(keyboardMap[e.keyCode]!==undefined) nes.buttonUp(1, keyboardMap[e.keyCode]); };
+        // КАРТА КНОПОК (СТРОГО ПО СТАНДАРТУ JSNES ДЛЯ PLAYER 1)
+        const keyboardMap = {
+            38: 0, // Up (Стрелка вверх)
+            40: 1, // Down (Стрелка вниз)
+            37: 2, // Left (Стрелка влево)
+            39: 3, // Right (Стрелка вправо)
+            88: 4, // Button A -> X (Прыжок)
+            90: 5, // Button B -> Z (Огонь)
+            16: 6, // Select -> Shift
+            13: 7  // Start -> Enter
+        };
 
-        // ЧАТ
+        window.addEventListener("keydown", function(e) {
+            if (keyboardMap[e.keyCode] !== undefined) {
+                nes.buttonDown(1, keyboardMap[e.keyCode]);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener("keyup", function(e) {
+            if (keyboardMap[e.keyCode] !== undefined) {
+                nes.buttonUp(1, keyboardMap[e.keyCode]);
+                e.preventDefault();
+            }
+        });
+
+        // --- ЧАТ ---
         let currentUser = localStorage.getItem('user') || "Гость";
         function setUser() {
             let n = document.getElementById('userNameInput').value.trim();
