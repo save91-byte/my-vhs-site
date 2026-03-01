@@ -9,7 +9,6 @@
         :root { --accent: #ff4500; --card-bg: rgba(15, 15, 15, 0.95); --text: #ffffff; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; color: var(--text); background: url('bg.jpg') #111 no-repeat center center fixed; background-size: cover; overflow-x: hidden; }
         
-        /* Навигация и Шапка */
         nav { background: rgba(0,0,0,0.9); padding: 15px; border-bottom: 2px solid var(--accent); text-align: center; position: sticky; top: 0; z-index: 100; }
         nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
         header { text-align: center; padding: 30px 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
@@ -17,7 +16,6 @@
         .bulb { font-size: 4rem; color: var(--accent); animation: pulse 2s infinite alternate; }
         @keyframes pulse { from { opacity: 0.5; text-shadow: 0 0 5px var(--accent); } to { opacity: 1; text-shadow: 0 0 25px var(--accent); } }
 
-        /* Контент */
         .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 20px; }
         .section-title { background: var(--accent); display: inline-block; padding: 6px 15px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; box-shadow: 4px 4px 0 #000; }
         .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; }
@@ -29,55 +27,54 @@
         .mini-player { width: 100%; height: 100%; border: none; pointer-events: none; opacity: 0.8; }
         .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
 
-        /* Админка */
         .delete-btn, .post-delete-btn { display: none; background: red; color: white; border: none; cursor: pointer; }
         body.admin-active .delete-btn, body.admin-active .post-delete-btn { display: block; }
-        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; }
+        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-size: 0.9rem; }
 
-        /* ЭМУЛЯТОР БОКОВАЯ ПАНЕЛЬ */
+        /* ЭМУЛЯТОР */
         #nes-sidebar { 
-            position: fixed; left: -400px; top: 0; width: 380px; height: 100%; 
-            background: #000; border-right: 4px solid var(--accent); z-index: 1000; 
-            transition: 0.4s; padding: 20px; display: flex; flex-direction: column; 
-            overflow-y: auto; /* ВКЛЮЧАЕМ СКРОЛЛ */
-            box-sizing: border-box;
+            position: fixed; left: -420px; top: 0; width: 400px; height: 100%; 
+            background: #111; border-right: 4px solid var(--accent); z-index: 1000; 
+            transition: 0.4s; padding: 15px; display: flex; flex-direction: column; 
+            overflow-y: auto; box-sizing: border-box;
         }
         #nes-sidebar.active { left: 0; }
-        #nes-canvas { width: 100%; background: #000; image-rendering: pixelated; border: 2px solid #333; aspect-ratio: 256/240; }
+        #nes-canvas { width: 100%; background: #000; border: 4px solid #333; border-radius: 4px; }
 
-        /* МОБИЛЬНЫЙ ДЖОЙСТИК */
-        .touch-controls { display: none; margin-top: 20px; padding-bottom: 40px; user-select: none; }
+        /* ДЖОЙСТИК - НОВАЯ ЭРГОНОМИКА */
+        .touch-controls { display: none; margin-top: 20px; padding-bottom: 60px; user-select: none; }
         @media (max-width: 950px) { 
             .logo { font-size: 3rem; } .main-layout { grid-template-columns: 1fr; } 
-            #nes-sidebar { width: 100%; left: -100%; border-right: none; }
+            #nes-sidebar { width: 100%; left: -100%; }
             .touch-controls { display: block; }
         }
 
-        .joypad { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; width: 100%; }
-        .dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 8px; width: 140px; }
-        .action-btns { display: flex; gap: 15px; align-items: center; justify-content: center; }
-        .t-btn { background: #222; color: white; border: 2px solid #444; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; touch-action: none; }
-        .t-btn:active { background: var(--accent); border-color: #fff; }
-        .d-btn { width: 45px; height: 45px; }
-        .a-btn { width: 60px; height: 60px; border-radius: 50%; background: #a00; font-size: 1.2rem; box-shadow: 0 4px 0 #600; }
-        .a-btn:active { transform: translateY(2px); box-shadow: none; }
-        .system-touch { display: flex; justify-content: center; gap: 20px; margin: 15px 0; }
-        .s-btn { padding: 10px 20px; background: #333; border-radius: 5px; font-size: 0.8rem; }
+        .joypad-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-top: 20px; }
+        
+        .dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 2px; background: #222; padding: 5px; border-radius: 10px; }
+        .t-btn { background: #333; color: white; border: 1px solid #444; display: flex; align-items: center; justify-content: center; touch-action: none; }
+        .t-btn:active { background: var(--accent); }
+        .d-btn { width: 55px; height: 55px; font-size: 1.5rem; }
+        
+        .action-btns { display: flex; gap: 25px; margin-top: 25px; } /* Отодвинуто от крестовины */
+        .a-btn { width: 70px; height: 70px; border-radius: 50%; background: #a00; font-size: 1.5rem; font-weight: 900; box-shadow: 0 5px 0 #600; }
+        .a-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        /* Плавающая кнопка */
-        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 60px; height: 60px; border-radius: 50%; cursor: grab; z-index: 1001; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(255,69,0,0.5); touch-action: none; }
+        .system-touch { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .s-btn { padding: 12px 25px; background: #222; border-radius: 5px; font-size: 0.8rem; border: 1px solid #444; }
 
-        /* Чат и сайдбар */
+        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 65px; height: 65px; border-radius: 50%; cursor: grab; z-index: 1001; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none; }
+
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
         .chat-area { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; font-size: 0.85rem; border-radius: 8px; }
         .input-group { display: flex; gap: 8px; margin-top: 10px; }
-        .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; }
+        .input-group input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 8px; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="adminBar">
-        🔐 ADMIN ACTIVE | 
+        🔐 ADMIN | 👁️ ВИЗИТЫ: <span id="viewCount">0</span> | 
         <button onclick="addNewVideo()">+ КАССЕТА</button>
         <button onclick="addPost()">+ НОВОСТЬ</button>
         <button onclick="resetAll()">СБРОС</button>
@@ -87,16 +84,12 @@
     <div id="dragBtn" class="nes-toggle">🎮</div>
 
     <div id="nes-sidebar">
-        <h2 style="color:var(--accent); text-align:center; margin-top:0;">DENDY ZONE</h2>
+        <h2 style="color:var(--accent); text-align:center;">DENDY ZONE</h2>
         <canvas id="nes-canvas" width="256" height="240"></canvas>
-        <button style="width:100%; margin:15px 0; padding:15px; font-weight:bold; background:var(--accent); color:white; border:none; border-radius:8px;" onclick="startNesGame('Contra.nes')">ЗАГРУЗИТЬ CONTRA</button>
+        <button style="width:100%; margin:15px 0; padding:15px; font-weight:bold; background:var(--accent); color:white; border:none; border-radius:8px;" onclick="startNesGame('Contra.nes')">CONTRA</button>
         
         <div class="touch-controls">
-            <div class="system-touch">
-                <div class="t-btn s-btn" onpointerdown="btnD(2)" onpointerup="btnU(2)" onpointerleave="btnU(2)" onpointercancel="btnU(2)">SELECT</div>
-                <div class="t-btn s-btn" onpointerdown="btnD(3)" onpointerup="btnU(3)" onpointerleave="btnU(3)" onpointercancel="btnU(3)">START</div>
-            </div>
-            <div class="joypad">
+            <div class="joypad-row">
                 <div class="dpad">
                     <div class="t-btn d-btn" style="grid-area:u" onpointerdown="btnD(4)" onpointerup="btnU(4)" onpointerleave="btnU(4)" onpointercancel="btnU(4)">▲</div>
                     <div class="t-btn d-btn" style="grid-area:l" onpointerdown="btnD(6)" onpointerup="btnU(6)" onpointerleave="btnU(6)" onpointercancel="btnU(6)">◀</div>
@@ -108,8 +101,13 @@
                     <div class="t-btn a-btn" onpointerdown="btnD(0)" onpointerup="btnU(0)" onpointerleave="btnU(0)" onpointercancel="btnU(0)">A</div>
                 </div>
             </div>
+
+            <div class="system-touch">
+                <div class="t-btn s-btn" onpointerdown="btnD(2)" onpointerup="btnU(2)" onpointerleave="btnU(2)" onpointercancel="btnU(2)">SELECT</div>
+                <div class="t-btn s-btn" onpointerdown="btnD(3)" onpointerup="btnU(3)" onpointerleave="btnU(3)" onpointercancel="btnU(3)">START</div>
+            </div>
         </div>
-        <button style="padding:15px; background:#333; color:white; border:none; border-radius:8px;" onclick="toggleNES()">ЗАКРЫТЬ ЭМУЛЯТОР</button>
+        <button style="padding:15px; background:#333; color:white; border:none; border-radius:8px;" onclick="toggleNES()">ЗАКРЫТЬ</button>
     </div>
 
     <nav><a href="#archive">АРХИВ</a> <a href="#news">НОВОСТИ</a></nav>
@@ -120,11 +118,11 @@
             <section id="archive">
                 <div class="section-title">VHS ПЛЕЕР</div>
                 <div class="main-video-container"><div class="video-wrap"><iframe id="mainPlayer" src="" allowFullScreen></iframe></div></div>
-                <div class="section-title">КАССЕТЫ</div>
+                <div class="section-title">БИБЛИОТЕКА</div>
                 <div class="video-grid" id="videoGrid"></div>
             </section>
             <section id="news">
-                <div class="section-title">НОВОСТИ</div>
+                <div class="section-title">СТЕНА</div>
                 <div id="newsFeed" class="news-feed"></div>
             </section>
         </main>
@@ -143,6 +141,12 @@
 
     <script>
         const ADMIN_LOGIN = "SAVE", ADMIN_PASS = "90s";
+        
+        // Счетчик визитов
+        let visits = parseInt(localStorage.getItem('vhs_visits') || "0");
+        visits++;
+        localStorage.setItem('vhs_visits', visits);
+
         let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || [{type:'youtube', id:'dQw4w9WgXcQ'}];
         let posts = JSON.parse(localStorage.getItem('vhs_posts')) || [{time:'01.03.2026', text:'SAVE START'}];
         let userNick = localStorage.getItem('vhs_user') || "Гость";
@@ -156,12 +160,18 @@
             if(vhsBox.length > 0) changeVideo(vhsBox[0].type === 'youtube' ? `https://www.youtube.com/embed/${vhsBox[0].id}` : `https://rutube.ru/play/embed/${vhsBox[0].id}/`);
         }
         function changeVideo(url) { document.getElementById('mainPlayer').src = url; }
+        
         function setUser() {
             let val = document.getElementById('userNameInput').value.trim();
             if(val === ADMIN_LOGIN && prompt("PASS:") === ADMIN_PASS) {
-                isAdmin = true; document.getElementById('adminBar').style.display = 'block'; document.getElementById('mainBody').classList.add('admin-active'); userNick = "ADMIN"; renderArchive(); renderPosts();
+                isAdmin = true; 
+                document.getElementById('adminBar').style.display = 'block'; 
+                document.getElementById('viewCount').innerText = visits;
+                document.getElementById('mainBody').classList.add('admin-active'); 
+                userNick = "ADMIN"; renderArchive(); renderPosts();
             } else if(val) { userNick = val; localStorage.setItem('vhs_user', val); }
         }
+
         function addNewVideo() {
             let l = prompt("URL:"); if(!l) return;
             let vid = { type: l.includes('youtube')?'youtube':'rutube', id: l.includes('v=')?l.split('v=')[1].split('&')[0]:l.split('/').pop() };
