@@ -125,19 +125,17 @@
         let visits = parseInt(localStorage.getItem('vhs_visits') || "0");
         visits++; localStorage.setItem('vhs_visits', visits);
 
-        // Инициализация данных
-        let vhsBox = JSON.parse(localStorage.getItem('vhs_box'));
-        if(!vhsBox || vhsBox.length === 0) {
-            vhsBox = [{type:'youtube', id:'dQw4w9WgXcQ'}];
-            localStorage.setItem('vhs_box', JSON.stringify(vhsBox));
-        }
+        // Теперь вместо Рика Эшли тут атмосферное VHS видео по умолчанию
+        let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || [{type:'youtube', id:'h736n92S1Yw'}];
         let posts = JSON.parse(localStorage.getItem('vhs_posts')) || [{time:'01.03.2026', text:'SAVE START'}];
         let userNick = localStorage.getItem('vhs_user') || "Гость";
 
         function changeVideo(url) { 
             const player = document.getElementById('mainPlayer');
             if(player && url) {
-                player.src = url;
+                // Добавляем автоматическое воспроизведение, если это клик по кассете
+                let separator = url.includes('?') ? '&' : '?';
+                player.src = url + separator + "autoplay=1";
             }
         }
 
@@ -157,11 +155,11 @@
                 </div>`;
             }).join('');
             
-            // Сразу ставим первое видео в плеер
-            if(vhsBox.length > 0) {
+            // Если плеер пустой, загружаем первое видео из списка БЕЗ автоплея
+            const player = document.getElementById('mainPlayer');
+            if(vhsBox.length > 0 && player && !player.src) {
                 let v = vhsBox[0];
-                let firstUrl = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
-                changeVideo(firstUrl);
+                player.src = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
             }
         }
 
@@ -196,7 +194,7 @@
             } else if(val) { userNick = val; localStorage.setItem('vhs_user', val); }
         }
 
-        // Эмулятор и управление (без изменений)
+        // NES Emulator
         var nes = new jsnes.NES({ onFrame: (buf) => {
             var ctx = document.getElementById('nes-canvas').getContext('2d'), img = ctx.getImageData(0,0,256,240), b32 = new Uint32Array(img.data.buffer);
             for(var i=0; i<256*240; ++i) b32[i] = 0xFF000000 | buf[i];
@@ -217,7 +215,6 @@
             if (x < 0.4) nes.buttonDown(1, 6); if (x > 0.6) nes.buttonDown(1, 7);
         });
 
-        // Запуск
         window.onload = () => {
             renderArchive();
             renderPosts();
