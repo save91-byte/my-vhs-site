@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAVE | VHS DYNAMIC ARCHIVE</title>
+    <title>SAVE | VHS DYNAMIC ARCHIVE & DENDY</title>
     <script src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
     <style>
         :root { --accent: #ff4500; --card-bg: rgba(15, 15, 15, 0.95); --text: #ffffff; }
@@ -19,17 +19,17 @@
         .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 20px; }
         .section-title { background: var(--accent); display: inline-block; padding: 6px 15px; margin-bottom: 20px; font-weight: bold; text-transform: uppercase; box-shadow: 4px 4px 0 #000; }
         .main-video-container { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 30px; }
-        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
+        .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; }
         .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-bottom: 40px; min-height: 100px; }
-        .video-item { background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; position: relative; height: 160px; }
-        .mini-player-frame { width: 100%; height: 100%; border: none; pointer-events: none; opacity: 0.7; }
-        .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .video-item { background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #333; position: relative; min-height: 180px; height: 180px; background-size: cover; background-position: center; }
+        .click-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; background: rgba(0,0,0,0.2); transition: 0.3s; }
+        .click-layer:hover { background: rgba(0,0,0,0); }
 
-        .delete-btn, .post-delete-btn { display: none; background: red; color: white; border: none; cursor: pointer; position: absolute; z-index: 20; top: 5px; right: 5px; }
+        .delete-btn, .post-delete-btn { display: none; background: red; color: white; border: none; cursor: pointer; position: absolute; z-index: 20; }
         body.admin-active .delete-btn, body.admin-active .post-delete-btn { display: block; }
-        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; }
+        #adminBar { position: fixed; top: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 10px; text-align: center; z-index: 2000; display: none; font-size: 0.9rem; }
 
         #nes-sidebar { position: fixed; left: -420px; top: 0; width: 400px; height: 100%; background: #111; border-right: 4px solid var(--accent); z-index: 1000; transition: 0.4s; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; }
         #nes-sidebar.active { left: 0; }
@@ -39,18 +39,22 @@
         @media (max-width: 950px) { 
             .logo { font-size: 3rem; } .main-layout { grid-template-columns: 1fr; } 
             #nes-sidebar { width: 100%; left: -100%; } .touch-controls { display: block; }
-            .video-grid { grid-template-columns: 1fr; }
         }
 
         .joypad-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 30px; }
         .dpad-container { position: relative; width: 160px; height: 160px; background: #222; border-radius: 20px; touch-action: none; }
-        .dpad-btn-vis { position: absolute; background: #333; border: 1px solid #444; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; pointer-events: none; }
+        .dpad-btn-vis { position: absolute; background: #333; border: 1px solid #444; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; font-size: 1.2rem; pointer-events: none; }
         .d-u { top: 5px; left: 55px; } .d-d { bottom: 5px; left: 55px; } .d-l { left: 5px; top: 55px; } .d-r { right: 5px; top: 55px; }
         .d-active { background: var(--accent) !important; }
 
         .action-btns { display: flex; gap: 20px; }
         .a-btn { width: 75px; height: 75px; border-radius: 50%; background: #a00; font-size: 1.5rem; font-weight: 900; box-shadow: 0 5px 0 #600; touch-action: none; border: none; color: white; }
-        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 65px; height: 65px; border-radius: 50%; z-index: 1001; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none; }
+        .a-btn:active { transform: translateY(3px); box-shadow: none; background: var(--accent); }
+
+        .system-touch { display: flex; justify-content: center; gap: 15px; margin: 25px 0; }
+        .s-btn { padding: 12px 25px; background: #222; border-radius: 5px; font-size: 0.8rem; border: 1px solid #444; color: #fff; touch-action: none; }
+
+        .nes-toggle { position: fixed; left: 20px; bottom: 20px; background: var(--accent); color: white; border: 2px solid #fff; width: 65px; height: 65px; border-radius: 50%; z-index: 1001; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); touch-action: none; }
 
         .sidebar-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
         .chat-area { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; font-size: 0.85rem; }
@@ -59,10 +63,11 @@
 <body id="mainBody">
 
     <div id="adminBar">
-        🔐 ADMIN | 👁️: <span id="viewCount">0</span> | 
+        🔐 ADMIN | 👁️ ВИЗИТЫ: <span id="viewCount">0</span> | 
         <button onclick="addNewVideo()">+ КАССЕТА</button>
         <button onclick="addPost()">+ НОВОСТЬ</button>
         <button onclick="resetAll()">СБРОС</button>
+        <button onclick="location.reload()">X</button>
     </div>
 
     <div id="dragBtn" class="nes-toggle">🎮</div>
@@ -71,6 +76,7 @@
         <h2 style="color:var(--accent); text-align:center;">DENDY ZONE</h2>
         <canvas id="nes-canvas" width="256" height="240"></canvas>
         <button style="width:100%; margin:15px 0; padding:15px; font-weight:bold; background:var(--accent); color:white; border:none; border-radius:8px;" onclick="startNesGame('Contra.nes')">CONTRA</button>
+        
         <div class="touch-controls">
             <div class="joypad-row">
                 <div class="dpad-container" id="touchDpad">
@@ -80,12 +86,16 @@
                     <div class="dpad-btn-vis d-d" id="vis-5">▼</div>
                 </div>
                 <div class="action-btns">
-                    <button class="a-btn" onpointerdown="btnD(1)" onpointerup="btnU(1)">B</button>
-                    <button class="a-btn" onpointerdown="btnD(0)" onpointerup="btnU(0)">A</button>
+                    <button class="a-btn" onpointerdown="btnD(1)" onpointerup="btnU(1)" onpointercancel="btnU(1)">B</button>
+                    <button class="a-btn" onpointerdown="btnD(0)" onpointerup="btnU(0)" onpointercancel="btnU(0)">A</button>
                 </div>
             </div>
+            <div class="system-touch">
+                <button class="s-btn" onpointerdown="btnD(2)" onpointerup="btnU(2)" onpointercancel="btnU(2)">SELECT</button>
+                <button class="s-btn" onpointerdown="btnD(3)" onpointerup="btnU(3)" onpointercancel="btnU(3)">START</button>
+            </div>
         </div>
-        <button style="width:100%; padding:15px; background:#333; color:white; border:none; border-radius:8px;" onclick="toggleNES()">ЗАКРЫТЬ</button>
+        <button style="padding:15px; background:#333; color:white; border:none; border-radius:8px;" onclick="toggleNES()">ЗАКРЫТЬ</button>
     </div>
 
     <nav><a href="#archive">АРХИВ</a> <a href="#news">НОВОСТИ</a></nav>
@@ -95,27 +105,24 @@
         <main>
             <section id="archive">
                 <div class="section-title">VHS ПЛЕЕР</div>
-                <div class="main-video-container">
-                    <div class="video-wrap">
-                        <iframe id="mainPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-                    </div>
-                </div>
+                <div class="main-video-container"><div class="video-wrap"><iframe id="mainPlayer" src="" allowFullScreen></iframe></div></div>
                 <div class="section-title">БИБЛИОТЕКА</div>
                 <div id="videoGrid" class="video-grid"></div>
             </section>
             <section id="news">
                 <div class="section-title">СТЕНА</div>
-                <div id="newsFeed"></div>
+                <div id="newsFeed" class="news-feed"></div>
             </section>
         </main>
         <aside>
             <div class="sidebar-box">
-                <div style="color:var(--accent); font-weight:bold;">НИКНЕЙМ</div>
-                <input type="text" id="userNameInput" style="width:70%"><button onclick="setUser()">OK</button>
+                <div style="color:var(--accent); font-weight:bold; margin-bottom:5px;">НИКНЕЙМ</div>
+                <div class="input-group"><input type="text" id="userNameInput" style="width:70%"><button onclick="setUser()">OK</button></div>
             </div>
             <div class="sidebar-box">
+                <div style="color:var(--accent); font-weight:bold; margin-bottom:5px;">ЧАТ</div>
                 <div id="chatWindow" class="chat-area"></div>
-                <input type="text" id="chatInput" style="width:70%" onkeypress="if(event.keyCode==13) sendMessage()"><button onclick="sendMessage()">➤</button>
+                <div class="input-group"><input type="text" id="chatInput" style="width:70%" onkeypress="if(event.keyCode==13) sendMessage()"><button onclick="sendMessage()">➤</button></div>
             </div>
         </aside>
     </div>
@@ -125,100 +132,91 @@
         let visits = parseInt(localStorage.getItem('vhs_visits') || "0");
         visits++; localStorage.setItem('vhs_visits', visits);
 
-        // Теперь вместо Рика Эшли тут атмосферное VHS видео по умолчанию
-        let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || [{type:'youtube', id:'h736n92S1Yw'}];
+        let vhsBox = JSON.parse(localStorage.getItem('vhs_box')) || [{type:'youtube', id:'dQw4w9WgXcQ'}];
         let posts = JSON.parse(localStorage.getItem('vhs_posts')) || [{time:'01.03.2026', text:'SAVE START'}];
         let userNick = localStorage.getItem('vhs_user') || "Гость";
-
-        function changeVideo(url) { 
-            const player = document.getElementById('mainPlayer');
-            if(player && url) {
-                // Добавляем автоматическое воспроизведение, если это клик по кассете
-                let separator = url.includes('?') ? '&' : '?';
-                player.src = url + separator + "autoplay=1";
-            }
-        }
+        let isAdmin = false;
 
         function renderArchive() {
-            const grid = document.getElementById('videoGrid');
-            if(!grid) return;
-            
-            grid.innerHTML = vhsBox.map((v, i) => {
+            document.getElementById('videoGrid').innerHTML = vhsBox.map((v, i) => {
+                let thumb = v.type === 'youtube' ? `https://img.youtube.com/vi/${v.id}/mqdefault.jpg` : `https://static.rutube.ru/static/img/logo-rt.png`;
                 let embed = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
-                let thumb = v.type === 'youtube' ? `background-image:url('https://img.youtube.com/vi/${v.id}/mqdefault.jpg'); background-size:cover;` : '';
-                
                 return `
-                <div class="video-item" style="${thumb}">
-                    <button class="delete-btn" onclick="deleteVideo(${i}); event.stopPropagation();">X</button>
+                <div class="video-item" style="background-image: url('${thumb}')">
+                    <button class="delete-btn" onclick="deleteVideo(${i})">X</button>
                     <div class="click-layer" onclick="changeVideo('${embed}')"></div>
-                    ${v.type === 'rutube' ? `<iframe class="mini-player-frame" src="${embed}?autoplay=0&mute=1"></iframe>` : ''}
+                    ${v.type === 'rutube' ? '<div style="position:absolute;bottom:5px;right:5px;font-size:10px;background:rgba(0,0,0,0.7);padding:2px 5px;">RUTUBE</div>' : ''}
                 </div>`;
             }).join('');
-            
-            // Если плеер пустой, загружаем первое видео из списка БЕЗ автоплея
-            const player = document.getElementById('mainPlayer');
-            if(vhsBox.length > 0 && player && !player.src) {
-                let v = vhsBox[0];
-                player.src = v.type === 'youtube' ? `https://www.youtube.com/embed/${v.id}` : `https://rutube.ru/play/embed/${v.id}/`;
+            if(vhsBox.length > 0 && !document.getElementById('mainPlayer').src) {
+                let first = vhsBox[0];
+                changeVideo(first.type === 'youtube' ? `https://www.youtube.com/embed/${first.id}` : `https://rutube.ru/play/embed/${first.id}/`);
             }
         }
 
-        function addNewVideo() {
-            let l = prompt("Ссылка (YouTube/Rutube):");
-            if(!l) return;
-            let type = 'youtube', id = '';
-            if (l.includes('rutube.ru')) {
-                type = 'rutube';
-                id = l.split('video/')[1]?.split('/')[0] || l.split('/').pop().split(/[?&]/)[0];
-            } else {
-                id = l.includes('v=') ? l.split('v=')[1].split('&')[0] : l.split('/').pop().split(/[?&]/)[0];
-            }
-            if(id) {
-                vhsBox.push({type, id});
-                localStorage.setItem('vhs_box', JSON.stringify(vhsBox));
-                renderArchive();
-            }
-        }
-
-        function deleteVideo(i) { vhsBox.splice(i, 1); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive(); }
-        function renderPosts() { document.getElementById('newsFeed').innerHTML = posts.map(p => `<div style="border-left:2px solid var(--accent); padding:5px; margin:10px 0;"><small>${p.time}</small><div>${p.text}</div></div>`).reverse().join(''); }
-        function sendMessage() { let i = document.getElementById('chatInput'); if(i.value) { document.getElementById('chatWindow').innerHTML += `<div><b>${userNick}:</b> ${i.value}</div>`; i.value = ""; document.getElementById('chatWindow').scrollTop = 999; } }
+        function changeVideo(url) { document.getElementById('mainPlayer').src = url; }
         
         function setUser() {
             let val = document.getElementById('userNameInput').value.trim();
-            if(val === ADMIN_LOGIN && prompt("PASS") === ADMIN_PASS) {
-                document.body.classList.add('admin-active');
-                document.getElementById('adminBar').style.display = 'block';
-                document.getElementById('viewCount').innerText = visits;
-                renderArchive();
+            if(val === ADMIN_LOGIN && prompt("PASS:") === ADMIN_PASS) {
+                isAdmin = true; document.getElementById('adminBar').style.display = 'block'; document.getElementById('viewCount').innerText = visits;
+                document.getElementById('mainBody').classList.add('admin-active'); userNick = "ADMIN"; renderArchive(); renderPosts();
             } else if(val) { userNick = val; localStorage.setItem('vhs_user', val); }
         }
 
-        // NES Emulator
+        function addNewVideo() {
+            let l = prompt("URL:"); if(!l) return;
+            let id = "";
+            if(l.includes('v=')) { id = l.split('v=')[1].split('&')[0]; } 
+            else { id = l.split('?')[0].split('/').filter(s => s !== '').pop(); }
+            let vid = { type: (l.includes('youtube') || l.includes('youtu.be')) ? 'youtube' : 'rutube', id: id };
+            vhsBox.push(vid); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive();
+        }
+
+        function deleteVideo(i) { vhsBox.splice(i, 1); localStorage.setItem('vhs_box', JSON.stringify(vhsBox)); renderArchive(); }
+        function addPost() { let t = prompt("Text:"); if(t) { posts.push({time: new Date().toLocaleString(), text: t}); localStorage.setItem('vhs_posts', JSON.stringify(posts)); renderPosts(); } }
+        function renderPosts() { document.getElementById('newsFeed').innerHTML = posts.map((p, i) => `<div class="post"><button class="post-delete-btn" onclick="posts.splice(${i},1);renderPosts()">X</button><small>${p.time}</small><div>${p.text}</div></div>`).reverse().join(''); }
+        function sendMessage() { let i = document.getElementById('chatInput'); if(i.value) { document.getElementById('chatWindow').innerHTML += `<div><b>${userNick}:</b> ${i.value}</div>`; i.value = ""; document.getElementById('chatWindow').scrollTop = 9999; } }
+        function resetAll() { localStorage.clear(); location.reload(); }
+
         var nes = new jsnes.NES({ onFrame: (buf) => {
             var ctx = document.getElementById('nes-canvas').getContext('2d'), img = ctx.getImageData(0,0,256,240), b32 = new Uint32Array(img.data.buffer);
             for(var i=0; i<256*240; ++i) b32[i] = 0xFF000000 | buf[i];
             ctx.putImageData(img,0,0);
         }});
         function toggleNES() { document.getElementById('nes-sidebar').classList.toggle('active'); }
-        function startNesGame(u) { var x = new XMLHttpRequest(); x.open("GET", u, true); x.overrideMimeType("text/plain; charset=x-user-defined"); x.onload = function() { nes.loadROM(this.responseText); setInterval(()=>nes.frame(), 16); }; x.send(); }
+        function startNesGame(u) { var x = new XMLHttpRequest(); x.open("GET", u, true); x.overrideMimeType("text/plain; charset=x-user-defined"); x.onload = function() { nes.loadROM(this.responseText); if(!window.nesInt) window.nesInt = setInterval(()=>nes.frame(), 16); }; x.send(); }
         function btnD(k) { nes.buttonDown(1, k); }
         function btnU(k) { nes.buttonUp(1, k); }
 
         const dpad = document.getElementById('touchDpad');
-        dpad.addEventListener('pointermove', (e) => {
-            if(!e.buttons) return;
+        function handleDpad(e) {
+            if (e.type === 'pointerup' || e.type === 'pointercancel') {
+                [4,5,6,7].forEach(k => { nes.buttonUp(1, k); document.getElementById('vis-'+k).classList.remove('d-active'); });
+                return;
+            }
             const rect = dpad.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width, y = (e.clientY - rect.top) / rect.height;
-            [4,5,6,7].forEach(k => nes.buttonUp(1, k));
-            if (y < 0.4) nes.buttonDown(1, 4); if (y > 0.6) nes.buttonDown(1, 5);
-            if (x < 0.4) nes.buttonDown(1, 6); if (x > 0.6) nes.buttonDown(1, 7);
-        });
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+            const newKeys = new Set();
+            if (y < 0.45) newKeys.add(4); if (y > 0.55) newKeys.add(5);
+            if (x < 0.45) newKeys.add(6); if (x > 0.55) newKeys.add(7);
+            [4,5,6,7].forEach(k => {
+                if (newKeys.has(k)) { nes.buttonDown(1, k); document.getElementById('vis-'+k).classList.add('d-active'); }
+                else { nes.buttonUp(1, k); document.getElementById('vis-'+k).classList.remove('d-active'); }
+            });
+        }
+        dpad.addEventListener('pointerdown', handleDpad);
+        dpad.addEventListener('pointermove', (e) => { if(e.buttons) handleDpad(e); });
+        dpad.addEventListener('pointerup', handleDpad); dpad.addEventListener('pointercancel', handleDpad);
 
-        window.onload = () => {
-            renderArchive();
-            renderPosts();
-        };
+        const dragBtn = document.getElementById('dragBtn');
+        let isDragging = false, startX, startY, moveDist = 0;
+        dragBtn.onpointerdown = (e) => { isDragging = true; moveDist = 0; startX = e.clientX - dragBtn.offsetLeft; startY = e.clientY - dragBtn.offsetTop; dragBtn.setPointerCapture(e.pointerId); };
+        dragBtn.onpointermove = (e) => { if (!isDragging) return; let x = e.clientX - startX, y = e.clientY - startY; moveDist += Math.abs(e.movementX) + Math.abs(e.movementY); dragBtn.style.left = x+'px'; dragBtn.style.top = y+'px'; dragBtn.style.bottom='auto'; dragBtn.style.right='auto'; };
+        dragBtn.onpointerup = () => { isDragging = false; if (moveDist < 10) toggleNES(); };
+
+        renderArchive(); renderPosts();
     </script>
 </body>
 </html>
